@@ -1,0 +1,21 @@
+.root {
+    -fx-background-color: #f5f5f5;
+    -fx-padding: 40;
+}
+
+.label {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+.button {
+    -fx-background-color: #4A90E2;
+    -fx-text-fill: white;
+    -fx-padding: 10 20;
+    -fx-font-size: 16px;
+    -fx-background-radius: 10;
+}
+
+.button:hover {
+    -fx-background-color: #357ABD;
+}
