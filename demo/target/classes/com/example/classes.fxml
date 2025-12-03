@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/22"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.ClassesController">
+
+    <top>
+        <HBox spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <children>
+                <Label text="Major:"/>
+                <ComboBox fx:id="majorComboBox" prefWidth="200.0"/>
+
+                <Label text="Semester:"/>
+                <ComboBox fx:id="semesterComboBox" prefWidth="200.0"/>
+
+                <Button text="Filter" onAction="#handleFilter"/>
+                <Button text="Clear" onAction="#handleClear"/>
+
+                <Pane HBox.hgrow="ALWAYS"/>
+                <Button text="Back" onAction="#handleBack"/>
+            </children>
+        </HBox>
+    </top>
+
+    <center>
+        <TableView fx:id="classesTable" prefWidth="800.0" prefHeight="500.0">
+            <columns>
+                <TableColumn fx:id="codeColumn" text="Course Code" prefWidth="100.0"/>
+                <TableColumn fx:id="nameColumn" text="Course Name" prefWidth="250.0"/>
+                <TableColumn fx:id="creditsColumn" text="Credits" prefWidth="80.0"/>
+                <TableColumn fx:id="deptColumn" text="Department" prefWidth="150.0"/>
+                <TableColumn fx:id="majorColumn" text="Major" prefWidth="150.0"/>
+                <TableColumn fx:id="semesterColumn" text="Semester" prefWidth="120.0"/>
+            </columns>
+        </TableView>
+    </center>
+
+</BorderPane>
