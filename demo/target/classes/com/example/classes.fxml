@@ -31,9 +31,9 @@
     </top>
 
     <center>
-        <TableView fx:id="classesTable" prefWidth="800.0" prefHeight="500.0">
+        <TableView fx:id="classesTable" editable="true" prefWidth="800.0" prefHeight="500.0">
             <columns>
-                <TableColumn fx:id="selectColumn" text="Select" prefWidth="80.0" />
+                <TableColumn fx:id="selectColumn" text="Select" editable="true" prefWidth="80.0" />
                 <TableColumn fx:id="codeColumn" text="Course Code" prefWidth="100.0"/>
                 <TableColumn fx:id="nameColumn" text="Course Name" prefWidth="250.0"/>
                 <TableColumn fx:id="creditsColumn" text="Credits" prefWidth="80.0"/>
