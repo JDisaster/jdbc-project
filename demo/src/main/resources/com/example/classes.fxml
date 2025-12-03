@@ -22,6 +22,7 @@
 
                 <Button text="Filter" onAction="#handleFilter"/>
                 <Button text="Clear" onAction="#handleClear"/>
+                <Button text="Enroll" onAction="#handleEnroll"/>
 
                 <Pane HBox.hgrow="ALWAYS"/>
                 <Button text="Back" onAction="#handleBack"/>
@@ -32,6 +33,7 @@
     <center>
         <TableView fx:id="classesTable" prefWidth="800.0" prefHeight="500.0">
             <columns>
+                <TableColumn fx:id="selectColumn" text="Select" prefWidth="80.0" />
                 <TableColumn fx:id="codeColumn" text="Course Code" prefWidth="100.0"/>
                 <TableColumn fx:id="nameColumn" text="Course Name" prefWidth="250.0"/>
                 <TableColumn fx:id="creditsColumn" text="Credits" prefWidth="80.0"/>

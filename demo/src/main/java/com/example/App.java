@@ -8,22 +8,30 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-/**
- * JavaFX App
- */
 public class App extends Application {
 
     private static Scene scene;
 
+    // store the currently logged-in student ID
+    private static String currentStudentId;
+
+    public static void setCurrentStudentId(String id) {
+        currentStudentId = id;
+    }
+
+    public static String getCurrentStudentId() {
+        return currentStudentId;
+    }
+
     @Override
     public void start(Stage stage) throws IOException {
+        // change "landing" to whatever your first screen is (e.g., "login")
         scene = new Scene(loadFXML("landing"), 640, 480);
         stage.setScene(scene);
         stage.show();
     }
 
-
-    static void setRoot(String fxml) throws IOException {
+    public static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
     }
 
@@ -35,5 +43,4 @@ public class App extends Application {
     public static void main(String[] args) {
         launch();
     }
-
 }

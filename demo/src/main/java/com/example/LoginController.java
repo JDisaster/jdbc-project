@@ -22,14 +22,9 @@ public class LoginController {
         String studentID = studentIDField.getText();
         String password = passwordField.getText();
 
-        // if ("admin".equals(studentID) && "password".equals(password)) {
-        //     App.setRoot("primary");
-        // } else {
-        //     messageLabel.setText("Invalid studentID or password.");
-        // }
-        
-        // temp bypass login info for testing purposes
-         App.setRoot("primary");
+        // temp bypass login for testing
+        App.setCurrentStudentId(studentID); 
+        App.setRoot("primary");
     }
 
     @FXML
