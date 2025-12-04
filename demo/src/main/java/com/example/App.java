@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import com.example.mysql.Database;
 
 /**
  * JavaFX App
@@ -22,6 +23,10 @@ public class App extends Application {
         stage.show();
     }
 
+    @Override
+    public void init() throws Exception {
+        Database.init();
+    }
 
     static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
