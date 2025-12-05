@@ -16,8 +16,14 @@ public class CourseView {
     private final StringProperty major;
     private final StringProperty semester;
 
-    // checkbox state
+    // checkbox state for selection
     private final BooleanProperty selected = new SimpleBooleanProperty(false);
+
+    // whether this course row is already enrolled for the current student (for greying out)
+    private final BooleanProperty alreadyEnrolled = new SimpleBooleanProperty(false);
+
+    // NEW: enrollment_id from the enrollments table (for dropping + grades)
+    private final IntegerProperty enrollmentId = new SimpleIntegerProperty(0);
 
     public CourseView(String courseCode,
                       String courseName,
@@ -111,7 +117,7 @@ public class CourseView {
         return semester;
     }
 
-    // ----- selected (checkbox) -----
+    // ----- selected (checkbox for UI) -----
     public boolean isSelected() {
         return selected.get();
     }
@@ -122,5 +128,31 @@ public class CourseView {
 
     public BooleanProperty selectedProperty() {
         return selected;
+    }
+
+    // ----- alreadyEnrolled (for grey-out logic) -----
+    public boolean isAlreadyEnrolled() {
+        return alreadyEnrolled.get();
+    }
+
+    public void setAlreadyEnrolled(boolean value) {
+        alreadyEnrolled.set(value);
+    }
+
+    public BooleanProperty alreadyEnrolledProperty() {
+        return alreadyEnrolled;
+    }
+
+    // ----- enrollmentId (link to enrollments.id) -----
+    public int getEnrollmentId() {
+        return enrollmentId.get();
+    }
+
+    public void setEnrollmentId(int value) {
+        enrollmentId.set(value);
+    }
+
+    public IntegerProperty enrollmentIdProperty() {
+        return enrollmentId;
     }
 }

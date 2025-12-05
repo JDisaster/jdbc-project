@@ -25,7 +25,10 @@
                 <Button text="Enroll" onAction="#handleEnroll"/>
 
                 <Pane HBox.hgrow="ALWAYS"/>
-                <Button text="Back" onAction="#handleBack"/>
+                <Button text="Back"
+                    onAction="#handleBack"
+                    GridPane.columnIndex="5"
+                    GridPane.rowIndex="0" />
             </children>
         </HBox>
     </top>

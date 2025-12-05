@@ -13,6 +13,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.example.dao.CourseDao;
 import java.sql.*;
@@ -68,14 +70,34 @@ public class ClassesController {
         majorColumn.setCellValueFactory(data -> data.getValue().majorProperty());
         semesterColumn.setCellValueFactory(data -> data.getValue().semesterProperty());
 
-        // checkbox column: use the helper, it wires editing correctly
+        // checkbox column
         selectColumn.setCellValueFactory(cd -> cd.getValue().selectedProperty());
         selectColumn.setCellFactory(CheckBoxTableCell.forTableColumn(selectColumn));
+
+        // NEW: grey out rows that are already enrolled & disable them
+        classesTable.setRowFactory(tv -> new TableRow<CourseView>() {
+            @Override
+            protected void updateItem(CourseView item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty || item == null) {
+                    setStyle("");
+                    setDisable(false);
+                } else if (item.isAlreadyEnrolled()) {
+                    setStyle("-fx-background-color: #e0e0e0; -fx-opacity: 0.7;");
+                    setDisable(true);   // disables checkbox & row selection
+                } else {
+                    setStyle("");
+                    setDisable(false);
+                }
+            }
+        });
 
         // filters + data
         loadFilters();
         loadCourses(null, null);
     }
+
 
 
     @FXML
@@ -212,12 +234,42 @@ public class ClassesController {
             if ("All".equals(semesterFilter)) semesterFilter = null;
 
             var list = courseDao.getCourses(majorFilter, semesterFilter);
+
+            // NEW: find which (course_code, semester) pairs this student is already enrolled in
+            String studentId = App.getCurrentStudentId();
+            Set<String> enrolledKeys = new HashSet<>();
+            if (studentId != null && !studentId.isBlank()) {
+                String sql = "SELECT course_code, semester FROM enrollments WHERE student_id = ?";
+                try (Connection conn = DatabaseConnection.getConnection();
+                    PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+                    stmt.setString(1, studentId);
+                    try (ResultSet rs = stmt.executeQuery()) {
+                        while (rs.next()) {
+                            String key = rs.getString("course_code") + "|" + rs.getString("semester");
+                            enrolledKeys.add(key);
+                        }
+                    }
+                }
+            }
+
+            // Mark each CourseView as alreadyEnrolled if it’s in that set
+            for (CourseView cv : list) {
+                String key = cv.getCourseCode() + "|" + cv.getSemester();
+                if (enrolledKeys.contains(key)) {
+                    cv.setAlreadyEnrolled(true);
+                } else {
+                    cv.setAlreadyEnrolled(false);
+                }
+            }
+
             ObservableList<CourseView> data = FXCollections.observableArrayList(list);
             classesTable.setItems(data);
         } catch (SQLException e) {
             showError("Error loading courses", e.getMessage());
         }
     }
+
 
     @FXML
     private void handleFilter() {
@@ -236,7 +288,7 @@ public class ClassesController {
     @FXML
     private void handleBack() throws IOException {
         // Go back to your main/primary page
-        App.setRoot("primary");
+        App.setRoot("login");
     }
 
     private void showError(String title, String msg) {

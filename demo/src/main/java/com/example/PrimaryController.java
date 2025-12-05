@@ -1,7 +1,6 @@
 package com.example;
 
 import java.io.IOException;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,21 +11,28 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 import com.example.dao.DatabaseConnection;
 
 public class PrimaryController {
 
-    // --- top bar ---
-    @FXML
-    private ImageView profileImageView;
-
+    // --- top labels ---
     @FXML
     private Label studentIdLabel;
 
-    // --- center table: enrolled classes ---
+    @FXML
+    private Label studentNameLabel;
+
+    @FXML
+    private Label studentMajorLabel;
+
+    @FXML
+    private Label studentSemesterLabel;
+
+    @FXML
+    private Button dropClassesButton;
+
+    // --- table for enrolled classes ---
     @FXML
     private TableView<CourseView> enrolledTable;
 
@@ -52,42 +58,28 @@ public class PrimaryController {
     private TableColumn<CourseView, String> enrolledSemesterColumn;
 
     @FXML
-    private Button dropClassesButton;
-
-    @FXML
     private void initialize() {
         System.out.println("DEBUG PrimaryController.initialize()");
 
-        // --- profile image (optional) ---
-        URL imgUrl = getClass().getResource("/com/example/profile.png");
-        if (imgUrl != null && profileImageView != null) {
-            profileImageView.setImage(new Image(imgUrl.toExternalForm()));
-        }
-
-        // --- student ID label ---
+        // always show the student ID we think is logged in
         String studentId = App.getCurrentStudentId();
-        if (studentIdLabel != null) {
-            if (studentId != null && !studentId.isBlank()) {
-                studentIdLabel.setText("Student ID: " + studentId);
-            } else {
-                studentIdLabel.setText("Student ID: (not set)");
-            }
-        }
-
-        // --- enrolled classes table setup ---
-        
-    if (enrolledTable != null) {
-        System.out.println("DEBUG: enrolledTable is not null");
-
-        // Only configure select column if it was injected
-        if (enrolledSelectColumn != null) {
-            enrolledSelectColumn.setCellValueFactory(cd -> cd.getValue().selectedProperty());
-            enrolledSelectColumn.setCellFactory(
-                CheckBoxTableCell.forTableColumn(enrolledSelectColumn)
-            );
+        if (studentId == null || studentId.isBlank()) {
+            studentIdLabel.setText("Student ID: (not set)");
+            if (studentNameLabel != null)     studentNameLabel.setText("Name: (unknown)");
+            if (studentMajorLabel != null)    studentMajorLabel.setText("Major: (unknown)");
+            if (studentSemesterLabel != null) studentSemesterLabel.setText("Current Semester: (unknown)");
         } else {
-            System.out.println("DEBUG: enrolledSelectColumn is null (no checkbox column in FXML)");
+            studentIdLabel.setText("Student ID: " + studentId);
         }
+
+        // set up table columns
+        if (enrolledTable != null) {
+            enrolledTable.setEditable(true);
+
+            if (enrolledSelectColumn != null) {
+                enrolledSelectColumn.setCellValueFactory(cd -> cd.getValue().selectedProperty());
+                enrolledSelectColumn.setCellFactory(CheckBoxTableCell.forTableColumn(enrolledSelectColumn));
+            }
 
             enrolledCodeColumn.setCellValueFactory(data -> data.getValue().courseCodeProperty());
             enrolledNameColumn.setCellValueFactory(data -> data.getValue().courseNameProperty());
@@ -95,19 +87,70 @@ public class PrimaryController {
             enrolledDeptColumn.setCellValueFactory(data -> data.getValue().departmentProperty());
             enrolledMajorColumn.setCellValueFactory(data -> data.getValue().majorProperty());
             enrolledSemesterColumn.setCellValueFactory(data -> data.getValue().semesterProperty());
-
-            loadEnrolledClasses(App.getCurrentStudentId());
         }
 
+        // drop button disabled by default
         if (dropClassesButton != null) {
             dropClassesButton.setDisable(true);
         }
+
+        // if we have a logged-in student, load their info + schedule
+        if (studentId != null && !studentId.isBlank()) {
+            loadStudentInfo(studentId);
+            loadEnrolledClasses(studentId);
+        }
     }
+
+    // ------------------ student header info ------------------
+
+    private void loadStudentInfo(String studentId) {
+        System.out.println("DEBUG loadStudentInfo for studentId=" + studentId);
+
+        String sql = "SELECT name, major, semester FROM users WHERE student_id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, studentId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String name     = rs.getString("name");
+                    String major    = rs.getString("major");
+                    String semester = rs.getString("semester");
+
+                    System.out.println("DEBUG found user: " + name + ", " + major + ", " + semester);
+
+                    if (studentNameLabel != null) {
+                        studentNameLabel.setText("Name: " + name);
+                    }
+                    if (studentMajorLabel != null) {
+                        studentMajorLabel.setText("Major: " + major);
+                    }
+                    if (studentSemesterLabel != null) {
+                        studentSemesterLabel.setText("Current Semester: " + semester);
+                    }
+                } else {
+                    System.out.println("DEBUG no user row found for " + studentId);
+                    if (studentNameLabel != null)     studentNameLabel.setText("Name: (not found)");
+                    if (studentMajorLabel != null)    studentMajorLabel.setText("Major: (not found)");
+                    if (studentSemesterLabel != null) studentSemesterLabel.setText("Current Semester: (not found)");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            if (studentNameLabel != null)     studentNameLabel.setText("Name: (error)");
+            if (studentMajorLabel != null)    studentMajorLabel.setText("Major: (error)");
+            if (studentSemesterLabel != null) studentSemesterLabel.setText("Current Semester: (error)");
+        }
+    }
+
+    // ------------------ enrolled classes table ------------------
 
     private void loadEnrolledClasses(String studentId) {
         ObservableList<CourseView> data = FXCollections.observableArrayList();
 
-        if (studentId == null || studentId.isBlank()) {
+        if (studentId == null || studentId.isBlank() || enrolledTable == null) {
             if (enrolledTable != null) {
                 enrolledTable.setItems(data);
             }
@@ -118,11 +161,12 @@ public class PrimaryController {
         }
 
         String sql =
-            "SELECT c.course_code, c.course_name, c.credits, c.department, " +
+            "SELECT e.enrollment_id, " +
+            "       c.course_code, c.course_name, c.credits, c.department, " +
             "       u.major, e.semester " +
             "FROM enrollments e " +
             "JOIN courses c ON e.course_code = c.course_code " +
-            "JOIN users u ON e.student_id = u.student_id " +
+            "JOIN users   u ON e.student_id   = u.student_id " +
             "WHERE e.student_id = ? " +
             "ORDER BY e.semester, c.course_code";
 
@@ -142,10 +186,11 @@ public class PrimaryController {
                             rs.getString("semester")
                     );
 
-                    // whenever a row's checkbox changes, update Drop button state
-                    cv.selectedProperty().addListener((obs, wasSelected, isNowSelected) -> {
-                        updateDropButtonState();
-                    });
+                    // store enrollment_id into the row so Drop can use it
+                    cv.setEnrollmentId(rs.getInt("enrollment_id"));
+
+                    // whenever a row is (un)checked, update Drop button state
+                    cv.selectedProperty().addListener((obs, oldVal, newVal) -> updateDropButtonState());
 
                     data.add(cv);
                 }
@@ -173,12 +218,13 @@ public class PrimaryController {
         dropClassesButton.setDisable(!anySelected);
     }
 
+    // ------------------ Drop Classes ------------------
+
     @FXML
     private void handleDropClasses() {
         if (enrolledTable == null) return;
 
-        // collect selected rows
-        ObservableList<CourseView> items = enrolledTable.getItems();
+        ObservableList<CourseView> items    = enrolledTable.getItems();
         ObservableList<CourseView> selected = FXCollections.observableArrayList();
         for (CourseView cv : items) {
             if (cv.isSelected()) {
@@ -187,10 +233,9 @@ public class PrimaryController {
         }
 
         if (selected.isEmpty()) {
-            return; // button should already be disabled in this case
+            return;
         }
 
-        // 3) confirmation popup
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Drop Classes");
         confirm.setHeaderText("Are you sure you want to drop these classes?");
@@ -198,7 +243,7 @@ public class PrimaryController {
         var result = confirm.showAndWait();
 
         if (result.isEmpty() || result.get() != ButtonType.OK) {
-            return; // user cancelled
+            return;
         }
 
         String studentId = App.getCurrentStudentId();
@@ -206,45 +251,64 @@ public class PrimaryController {
             return;
         }
 
-        // delete from enrollments
-        String sql =
-            "DELETE FROM enrollments " +
-            "WHERE student_id = ? AND course_code = ? AND semester = ?";
+        String deleteGradesSql = "DELETE FROM grades      WHERE enrollment_id = ?";
+        String deleteEnrollSql = "DELETE FROM enrollments WHERE enrollment_id = ?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            conn.setAutoCommit(false);
 
-            for (CourseView cv : selected) {
-                stmt.setString(1, studentId);
-                stmt.setString(2, cv.getCourseCode());
-                stmt.setString(3, cv.getSemester());
-                stmt.addBatch();
+            try (PreparedStatement deleteGrades = conn.prepareStatement(deleteGradesSql);
+                 PreparedStatement deleteEnroll = conn.prepareStatement(deleteEnrollSql)) {
+
+                for (CourseView cv : selected) {
+                    int enrollmentId = cv.getEnrollmentId();
+
+                    deleteGrades.setInt(1, enrollmentId);
+                    deleteGrades.addBatch();
+
+                    deleteEnroll.setInt(1, enrollmentId);
+                    deleteEnroll.addBatch();
+                }
+
+                deleteGrades.executeBatch();
+                deleteEnroll.executeBatch();
+                conn.commit();
+
+            } catch (SQLException e) {
+                conn.rollback();
+                e.printStackTrace();
+                Alert err = new Alert(Alert.AlertType.ERROR);
+                err.setTitle("Drop Error");
+                err.setHeaderText("Error dropping classes");
+                err.setContentText(e.getMessage());
+                err.showAndWait();
+                return;
             }
-
-            stmt.executeBatch();
 
         } catch (SQLException e) {
             e.printStackTrace();
             Alert err = new Alert(Alert.AlertType.ERROR);
             err.setTitle("Drop Error");
-            err.setHeaderText("Error dropping classes");
+            err.setHeaderText("Database error dropping classes");
             err.setContentText(e.getMessage());
             err.showAndWait();
             return;
         }
 
-        // reload table
+        // reload after successful drop
         loadEnrolledClasses(studentId);
     }
+
+    // ------------------ Navigation ------------------
 
     @FXML
     private void goToClasses() throws IOException {
         App.setRoot("classes");
     }
 
-    // harmless in case any old FXML references it
+    // left as a no-op in case old FXML still references it
     @FXML
     private void switchToSecondary() throws IOException {
-        // App.setRoot("secondary");
+        // no-op
     }
 }

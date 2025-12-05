@@ -2,6 +2,7 @@ com/example/App.class
 com/example/mysql/SQLConnector.class
 com/example/SignupController.class
 com/example/SignupController$2.class
+com/example/ClassesController$1.class
 com/example/PrimaryController.class
 com/example/SignupController$1.class
 com/example/SignupController$SemesterItem.class
