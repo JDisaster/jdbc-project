@@ -9,7 +9,7 @@ import javafx.scene.control.TextField;
 public class LoginController {
 
     @FXML
-    private TextField studentIDField;
+    private TextField studentEmailField;
 
     @FXML
     private PasswordField passwordField;
@@ -19,15 +19,16 @@ public class LoginController {
 
     @FXML
     private void handleLogin() throws IOException {
-        String studentID = studentIDField.getText();
+        String email = studentEmailField.getText();
         String password = passwordField.getText();
 
-        if (studentID == null || studentID.isBlank()) {
-            messageLabel.setText("Student ID cannot be empty.");
+        if (!Database.login(email, password)) {
+            messageLabel.setText("Error logging in, check your email or password");
             return;
         }
 
         // store logged-in ID
+        String studentID = Database.getStudentId(email);
         App.setCurrentStudentId(studentID);
         System.out.println("DEBUG handleLogin -> studentID=" + studentID);
 

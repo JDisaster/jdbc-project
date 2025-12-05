@@ -16,8 +16,8 @@
             <Label text="Login" GridPane.columnIndex="0" GridPane.rowIndex="0"
                    GridPane.columnSpan="2" style="-fx-font-size: 24px;"/>
 
-            <Label text="Student ID:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-            <TextField fx:id="studentIDField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <TextField fx:id="studentEmailField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
             <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
             <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="2"/>

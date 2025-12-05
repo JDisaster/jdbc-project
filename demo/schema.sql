@@ -9,11 +9,19 @@ CREATE TABLE IF NOT EXISTS students(
     major VARCHAR(50) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS departments(
+    departmentID INT AUTO_INCREMENT PRIMARY KEY,
+    departmentName VARCHAR(50) UNIQUE NOT NULL,
+    departmentCode VARCHAR(25) UNIQUE NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS courses(
     courseID INT AUTO_INCREMENT PRIMARY KEY,
     courseName VARCHAR(100) NOT NULL,
-    department VARCHAR(100) NOT NULL,
-    courseCode VARCHAR(10) UNIQUE NOT NULL
+    departmentID INT NOT NULL,
+    courseCode VARCHAR(10) UNIQUE NOT NULL,
+
+    FOREIGN KEY (departmentID) REFERENCES departments(departmentID)
 );
 
 CREATE TABLE IF NOT EXISTS registrations(
