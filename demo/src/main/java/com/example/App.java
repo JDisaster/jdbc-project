@@ -14,12 +14,10 @@ public class App extends Application {
     private static String currentStudentId;
 
     public static void setCurrentStudentId(String id) {
-        System.out.println("DEBUG setCurrentStudentId: " + id);
         currentStudentId = id;
     }
 
     public static String getCurrentStudentId() {
-        System.out.println("DEBUG getCurrentStudentId: " + currentStudentId);
         return currentStudentId;
     }
 

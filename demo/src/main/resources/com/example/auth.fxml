@@ -10,13 +10,11 @@
             style="-fx-background-color: white;">
 
     <center>
-        <!-- Center the entire row vertically -->
         <HBox spacing="60" alignment="CENTER">
             <padding>
                 <Insets top="40" bottom="40" left="40" right="40"/>
             </padding>
 
-            <!-- LOGIN SECTION (left) -->
             <VBox spacing="12" alignment="CENTER_LEFT">
                 <Label text="Login" style="-fx-font-size: 22; -fx-font-weight: bold;"/>
 
@@ -38,7 +36,6 @@
             </VBox>
 
 
-            <!-- VERTICAL DIVIDER WITH “OR” -->
             <VBox alignment="CENTER" spacing="5">
                 <Separator orientation="VERTICAL" prefHeight="200"/>
                 <Label text="or" style="-fx-font-size: 14; -fx-font-weight: bold;"/>
@@ -46,7 +43,6 @@
             </VBox>
 
 
-            <!-- SIGN-UP SECTION (right) -->
             <VBox spacing="12" alignment="CENTER_LEFT">
                 <Label text="Create Account" style="-fx-font-size: 22; -fx-font-weight: bold;"/>
 

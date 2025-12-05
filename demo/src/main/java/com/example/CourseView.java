@@ -19,27 +19,27 @@ public class CourseView {
     // checkbox state for selection
     private final BooleanProperty selected = new SimpleBooleanProperty(false);
 
-    // whether this course row is already enrolled for the current student (for greying out)
+    // whether this course row is already enrolled for the current student (for
+    // greying out)
     private final BooleanProperty alreadyEnrolled = new SimpleBooleanProperty(false);
 
-    // NEW: enrollment_id from the enrollments table (for dropping + grades)
+    // enrollment_id from the enrollments table (for dropping + grades)
     private final IntegerProperty enrollmentId = new SimpleIntegerProperty(0);
 
     public CourseView(String courseCode,
-                      String courseName,
-                      int credits,
-                      String department,
-                      String major,
-                      String semester) {
-        this.courseCode  = new SimpleStringProperty(courseCode);
-        this.courseName  = new SimpleStringProperty(courseName);
-        this.credits     = new SimpleIntegerProperty(credits);
-        this.department  = new SimpleStringProperty(department);
-        this.major       = new SimpleStringProperty(major);
-        this.semester    = new SimpleStringProperty(semester);
+            String courseName,
+            int credits,
+            String department,
+            String major,
+            String semester) {
+        this.courseCode = new SimpleStringProperty(courseCode);
+        this.courseName = new SimpleStringProperty(courseName);
+        this.credits = new SimpleIntegerProperty(credits);
+        this.department = new SimpleStringProperty(department);
+        this.major = new SimpleStringProperty(major);
+        this.semester = new SimpleStringProperty(semester);
     }
 
-    // ----- courseCode -----
     public String getCourseCode() {
         return courseCode.get();
     }
@@ -52,7 +52,6 @@ public class CourseView {
         return courseCode;
     }
 
-    // ----- courseName -----
     public String getCourseName() {
         return courseName.get();
     }
@@ -65,7 +64,6 @@ public class CourseView {
         return courseName;
     }
 
-    // ----- credits -----
     public int getCredits() {
         return credits.get();
     }
@@ -78,7 +76,6 @@ public class CourseView {
         return credits;
     }
 
-    // ----- department -----
     public String getDepartment() {
         return department.get();
     }
@@ -91,7 +88,6 @@ public class CourseView {
         return department;
     }
 
-    // ----- major -----
     public String getMajor() {
         return major.get();
     }
@@ -104,7 +100,6 @@ public class CourseView {
         return major;
     }
 
-    // ----- semester -----
     public String getSemester() {
         return semester.get();
     }
@@ -117,7 +112,6 @@ public class CourseView {
         return semester;
     }
 
-    // ----- selected (checkbox for UI) -----
     public boolean isSelected() {
         return selected.get();
     }
@@ -130,7 +124,7 @@ public class CourseView {
         return selected;
     }
 
-    // ----- alreadyEnrolled (for grey-out logic) -----
+    // for grey-out logic
     public boolean isAlreadyEnrolled() {
         return alreadyEnrolled.get();
     }
@@ -143,7 +137,6 @@ public class CourseView {
         return alreadyEnrolled;
     }
 
-    // ----- enrollmentId (link to enrollments.id) -----
     public int getEnrollmentId() {
         return enrollmentId.get();
     }

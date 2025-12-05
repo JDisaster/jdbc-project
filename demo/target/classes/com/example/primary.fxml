@@ -7,14 +7,12 @@
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.PrimaryController">
 
-    <!-- TOP: student info on left, buttons on right -->
     <top>
         <HBox spacing="20">
             <padding>
                 <Insets top="10" left="10" right="10" bottom="5"/>
             </padding>
 
-            <!-- Left: student info (FOUR labels!) -->
             <VBox spacing="4">
                 <Label fx:id="studentIdLabel"
                        text="Student ID: (not set)"/>
@@ -29,10 +27,8 @@
                        text="Current Semester: (not loaded)"/>
             </VBox>
 
-            <!-- spacer to push buttons to the right -->
             <Pane HBox.hgrow="ALWAYS"/>
 
-            <!-- Right: buttons -->
             <VBox spacing="5">
                 <Button text="View Classes"
                         onAction="#goToClasses"/>
@@ -45,7 +41,6 @@
         </HBox>
     </top>
 
-    <!-- CENTER: title + enrolled table -->
     <center>
         <VBox spacing="8">
             <padding>
@@ -57,7 +52,6 @@
 
             <TableView fx:id="enrolledTable" VBox.vgrow="ALWAYS">
                 <columns>
-                    <!-- selection checkbox column -->
                     <TableColumn fx:id="enrolledSelectColumn"
                                  text="" prefWidth="40"/>
 

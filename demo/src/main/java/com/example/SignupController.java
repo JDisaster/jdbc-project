@@ -40,7 +40,7 @@ public class SignupController {
 
     @FXML
     private void initialize() {
-        // ----- Majors -----
+        // Majors
         majorComboBox.getItems().addAll(
                 "Computer Science",
                 "Business Administration",
@@ -50,7 +50,7 @@ public class SignupController {
                 "Mathematics"
         );
 
-        // ----- Semesters for 2025–2026 -----
+        // Semesters for 2025–2026
         LocalDate today = LocalDate.now();
         int currentYear = today.getYear();
         int month = today.getMonthValue();
@@ -152,7 +152,7 @@ public class SignupController {
         String major       = majorComboBox.getValue();
         SemesterItem semesterItem = semesterComboBox.getValue();
 
-        // ---- Validation with error messages ----
+        // Validation with error messages
 
         if (studentName == null || studentName.isBlank()) {
             statusMessage.setText("Student name cannot be empty.");
@@ -189,7 +189,7 @@ public class SignupController {
 
         String semester = semesterItem.getLabel();
 
-        // ---- Insert into DB ----
+        // Insert into DB
         String sql = "INSERT INTO users (student_id, name, password, major, semester) " +
                     "VALUES (?, ?, ?, ?, ?)";
 

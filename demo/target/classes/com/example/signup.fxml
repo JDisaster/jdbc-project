@@ -12,56 +12,47 @@
         <Insets top="40" bottom="40" left="40" right="40"/>
     </padding>
 
-    <!-- Title -->
     <Label text="Create Account"
            GridPane.columnIndex="0" GridPane.rowIndex="0"
            GridPane.columnSpan="2"
            style="-fx-font-size: 24px;"/>
 
-    <!-- Student Name -->
     <Label text="Student Name:"
            GridPane.columnIndex="0" GridPane.rowIndex="1"/>
     <TextField fx:id="studentNameField"
                GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
-    <!-- Student ID -->
        <Label text="Student ID:"
               GridPane.columnIndex="0" GridPane.rowIndex="2"/>
        <TextField fx:id="newStudentID"
               GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 
 
-    <!-- Password -->
     <Label text="Password:"
            GridPane.columnIndex="0" GridPane.rowIndex="3"/>
     <PasswordField fx:id="newPassword"
                    GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
-    <!-- Major (dropdown) -->
     <Label text="Major:"
            GridPane.columnIndex="0" GridPane.rowIndex="4"/>
     <ComboBox fx:id="majorComboBox"
               prefWidth="200"
               GridPane.columnIndex="1" GridPane.rowIndex="4"/>
 
-    <!-- Semester (dynamic dropdown) -->
     <Label text="Semester:"
            GridPane.columnIndex="0" GridPane.rowIndex="5"/>
     <ComboBox fx:id="semesterComboBox"
               prefWidth="200"
               GridPane.columnIndex="1" GridPane.rowIndex="5"/>
 
-    <!-- Create Account button -->
     <Button text="Create Account"
             onAction="#handleCreateAccount"
             GridPane.columnIndex="1" GridPane.rowIndex="6"/>
 
-    <!-- Back to login hyperlink -->
     <Hyperlink text="Back to Login"
                onAction="#goBackToLogin"
                GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
-    <!-- Status message -->
     <Label fx:id="statusMessage"
            GridPane.columnIndex="0" GridPane.rowIndex="8"
            GridPane.columnSpan="2"/>

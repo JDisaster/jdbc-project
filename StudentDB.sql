@@ -2,22 +2,16 @@
 CREATE DATABASE IF NOT EXISTS studentdb;
 USE studentdb;
 
--- ========================
--- 1. users table
--- ========================
 CREATE TABLE users (
     user_id INT PRIMARY KEY AUTO_INCREMENT,
     student_id VARCHAR(20) NOT NULL UNIQUE,
     name VARCHAR(100) NOT NULL,
-    password VARCHAR(100) NOT NULL,
+    password VARCHAR(100) NOT NULL, --we are aware storing passwords like this is indeed bad practice
     major VARCHAR(50) NOT NULL,
     semester VARCHAR(20) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- ========================
--- 2. courses table
--- ========================
 CREATE TABLE courses (
     course_id INT PRIMARY KEY AUTO_INCREMENT,
     course_code VARCHAR(20) NOT NULL UNIQUE,
@@ -26,9 +20,6 @@ CREATE TABLE courses (
     department VARCHAR(50) NOT NULL
 );
 
--- ========================
--- 3. enrollments table
--- ========================
 CREATE TABLE enrollments (
     enrollment_id INT PRIMARY KEY AUTO_INCREMENT,
     student_id VARCHAR(20) NOT NULL,
@@ -39,9 +30,6 @@ CREATE TABLE enrollments (
     FOREIGN KEY (course_code) REFERENCES courses(course_code)
 );
 
--- ========================
--- 4. grades table
--- ========================
 CREATE TABLE grades (
     grade_id INT PRIMARY KEY AUTO_INCREMENT,
     enrollment_id INT NOT NULL,
@@ -50,11 +38,9 @@ CREATE TABLE grades (
     FOREIGN KEY (enrollment_id) REFERENCES enrollments(enrollment_id)
 );
 
--- ============================================
--- INSERT SAMPLE DATA (15+ records per table)
--- ============================================
+-- Sample data inserts (at least 15 records per table)
 
--- Insert 20 users (students)
+-- Insert 20 users
 INSERT INTO users (student_id, name, password, major, semester) VALUES
 ('1001', 'John Doe', 'password123', 'Computer Science', 'Fall 2025'),
 ('1002', 'Jane Smith', 'password123', 'Business Administration', 'Fall 2025'),
@@ -100,7 +86,7 @@ INSERT INTO courses (course_code, course_name, credits, department) VALUES
 ('PHYS101', 'Physics I', 4, 'Physics'),
 ('CHEM101', 'General Chemistry', 4, 'Chemistry');
 
--- Insert 30 enrollments (each student takes 1-3 courses)
+-- Insert 30 enrollments (giving each student 1-3 courses)
 INSERT INTO enrollments (student_id, course_code, semester, enrollment_date) VALUES
 -- John Doe (CS major) takes CS courses
 ('1001', 'CS101', 'Fall 2025', '2025-08-25'),
@@ -226,51 +212,3 @@ INSERT INTO grades (enrollment_id, grade, points) VALUES
 -- Grades for Patricia Lewis
 (23, 'A', 4.00), -- MATH101
 (24, 'A-', 3.70);-- MATH201
-
--- ============================================
--- VERIFICATION QUERIES
--- ============================================
-
--- Count records in each table
-SELECT 'users' as table_name, COUNT(*) as record_count FROM users
-UNION ALL
-SELECT 'courses', COUNT(*) FROM courses
-UNION ALL
-SELECT 'enrollments', COUNT(*) FROM enrollments
-UNION ALL
-SELECT 'grades', COUNT(*) FROM grades;
-
--- View sample data from each table
-SELECT * FROM users LIMIT 5;
-SELECT * FROM courses LIMIT 5;
-SELECT * FROM enrollments LIMIT 5;
-SELECT * FROM grades LIMIT 5;
-
--- Example query: Show all students with their courses and grades
-SELECT 
-    u.student_id,
-    u.name,
-    u.major,
-    e.course_code,
-    c.course_name,
-    g.grade,
-    g.points
-FROM users u
-JOIN enrollments e ON u.student_id = e.student_id
-JOIN courses c ON e.course_code = c.course_code
-LEFT JOIN grades g ON e.enrollment_id = g.enrollment_id
-ORDER BY u.student_id, e.course_code
-LIMIT 10;
-
--- Example query: Calculate GPA for each student
-SELECT 
-    u.student_id,
-    u.name,
-    ROUND(AVG(g.points), 2) as gpa,
-    COUNT(e.enrollment_id) as courses_taken
-FROM users u
-JOIN enrollments e ON u.student_id = e.student_id
-LEFT JOIN grades g ON e.enrollment_id = g.enrollment_id
-GROUP BY u.student_id, u.name
-ORDER BY gpa DESC
-LIMIT 10;

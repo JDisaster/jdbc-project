@@ -14,29 +14,37 @@ import com.example.dao.DatabaseConnection;
 public class AuthController {
 
     // ----- LOGIN -----
-    @FXML private TextField loginStudentID;
-    @FXML private PasswordField loginPassword;
-    @FXML private Label loginMessage;
+    @FXML
+    private TextField loginStudentID;
+    @FXML
+    private PasswordField loginPassword;
+    @FXML
+    private Label loginMessage;
 
     // ----- SIGNUP -----
-    @FXML private TextField signupName;
-    @FXML private TextField signupStudentID;
-    @FXML private PasswordField signupPassword;
-    @FXML private ComboBox<String> signupMajor;
-    @FXML private ComboBox<String> signupSemester;
-    @FXML private Label signupMessage;
+    @FXML
+    private TextField signupName;
+    @FXML
+    private TextField signupStudentID;
+    @FXML
+    private PasswordField signupPassword;
+    @FXML
+    private ComboBox<String> signupMajor;
+    @FXML
+    private ComboBox<String> signupSemester;
+    @FXML
+    private Label signupMessage;
 
     @FXML
     private void initialize() {
         // Majors
         signupMajor.getItems().addAll(
-            "Computer Science",
-            "Business Administration",
-            "Electrical Engineering",
-            "Biology",
-            "Psychology",
-            "Mathematics"
-        );
+                "Computer Science",
+                "Business Administration",
+                "Electrical Engineering",
+                "Biology",
+                "Psychology",
+                "Mathematics");
 
         // Semesters 2025–2026
         String[] terms = { "Spring", "Summer", "Fall", "Winter" };
@@ -87,10 +95,10 @@ public class AuthController {
     // SIGNUP HANDLER
     @FXML
     private void handleSignup() {
-        String name     = signupName.getText();
-        String id       = signupStudentID.getText();
-        String pw       = signupPassword.getText();
-        String major    = signupMajor.getValue();
+        String name = signupName.getText();
+        String id = signupStudentID.getText();
+        String pw = signupPassword.getText();
+        String major = signupMajor.getValue();
         String semester = signupSemester.getValue();
 
         if (name.isBlank() || id.isBlank() || pw.isBlank()) {
@@ -111,9 +119,8 @@ public class AuthController {
         }
 
         try (Connection conn = DatabaseConnection.getConnection()) {
-            String sql =
-                "INSERT INTO users (student_id, name, password, major, semester) " +
-                "VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO users (student_id, name, password, major, semester) " +
+                    "VALUES (?, ?, ?, ?, ?)";
 
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, id);

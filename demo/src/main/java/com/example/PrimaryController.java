@@ -16,7 +16,7 @@ import com.example.dao.DatabaseConnection;
 
 public class PrimaryController {
 
-    // --- top labels ---
+    // top labels
     @FXML
     private Label studentIdLabel;
 
@@ -32,7 +32,7 @@ public class PrimaryController {
     @FXML
     private Button dropClassesButton;
 
-    // --- table for enrolled classes ---
+    // table for enrolled classes
     @FXML
     private TableView<CourseView> enrolledTable;
 
@@ -59,15 +59,16 @@ public class PrimaryController {
 
     @FXML
     private void initialize() {
-        System.out.println("DEBUG PrimaryController.initialize()");
-
         // always show the student ID we think is logged in
         String studentId = App.getCurrentStudentId();
         if (studentId == null || studentId.isBlank()) {
             studentIdLabel.setText("Student ID: (not set)");
-            if (studentNameLabel != null)     studentNameLabel.setText("Name: (unknown)");
-            if (studentMajorLabel != null)    studentMajorLabel.setText("Major: (unknown)");
-            if (studentSemesterLabel != null) studentSemesterLabel.setText("Current Semester: (unknown)");
+            if (studentNameLabel != null)
+                studentNameLabel.setText("Name: (unknown)");
+            if (studentMajorLabel != null)
+                studentMajorLabel.setText("Major: (unknown)");
+            if (studentSemesterLabel != null)
+                studentSemesterLabel.setText("Current Semester: (unknown)");
         } else {
             studentIdLabel.setText("Student ID: " + studentId);
         }
@@ -101,25 +102,21 @@ public class PrimaryController {
         }
     }
 
-    // ------------------ student header info ------------------
-
+    // student header info
     private void loadStudentInfo(String studentId) {
-        System.out.println("DEBUG loadStudentInfo for studentId=" + studentId);
 
         String sql = "SELECT name, major, semester FROM users WHERE student_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, studentId);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    String name     = rs.getString("name");
-                    String major    = rs.getString("major");
+                    String name = rs.getString("name");
+                    String major = rs.getString("major");
                     String semester = rs.getString("semester");
-
-                    System.out.println("DEBUG found user: " + name + ", " + major + ", " + semester);
 
                     if (studentNameLabel != null) {
                         studentNameLabel.setText("Name: " + name);
@@ -131,21 +128,26 @@ public class PrimaryController {
                         studentSemesterLabel.setText("Current Semester: " + semester);
                     }
                 } else {
-                    System.out.println("DEBUG no user row found for " + studentId);
-                    if (studentNameLabel != null)     studentNameLabel.setText("Name: (not found)");
-                    if (studentMajorLabel != null)    studentMajorLabel.setText("Major: (not found)");
-                    if (studentSemesterLabel != null) studentSemesterLabel.setText("Current Semester: (not found)");
+                    if (studentNameLabel != null)
+                        studentNameLabel.setText("Name: (not found)");
+                    if (studentMajorLabel != null)
+                        studentMajorLabel.setText("Major: (not found)");
+                    if (studentSemesterLabel != null)
+                        studentSemesterLabel.setText("Current Semester: (not found)");
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            if (studentNameLabel != null)     studentNameLabel.setText("Name: (error)");
-            if (studentMajorLabel != null)    studentMajorLabel.setText("Major: (error)");
-            if (studentSemesterLabel != null) studentSemesterLabel.setText("Current Semester: (error)");
+            if (studentNameLabel != null)
+                studentNameLabel.setText("Name: (error)");
+            if (studentMajorLabel != null)
+                studentMajorLabel.setText("Major: (error)");
+            if (studentSemesterLabel != null)
+                studentSemesterLabel.setText("Current Semester: (error)");
         }
     }
 
-    // ------------------ enrolled classes table ------------------
+    // enrolled classes table
 
     private void loadEnrolledClasses(String studentId) {
         ObservableList<CourseView> data = FXCollections.observableArrayList();
@@ -160,18 +162,17 @@ public class PrimaryController {
             return;
         }
 
-        String sql =
-            "SELECT e.enrollment_id, " +
-            "       c.course_code, c.course_name, c.credits, c.department, " +
-            "       u.major, e.semester " +
-            "FROM enrollments e " +
-            "JOIN courses c ON e.course_code = c.course_code " +
-            "JOIN users   u ON e.student_id   = u.student_id " +
-            "WHERE e.student_id = ? " +
-            "ORDER BY e.semester, c.course_code";
+        String sql = "SELECT e.enrollment_id, " +
+                "       c.course_code, c.course_name, c.credits, c.department, " +
+                "       u.major, e.semester " +
+                "FROM enrollments e " +
+                "JOIN courses c ON e.course_code = c.course_code " +
+                "JOIN users   u ON e.student_id   = u.student_id " +
+                "WHERE e.student_id = ? " +
+                "ORDER BY e.semester, c.course_code";
 
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, studentId);
 
@@ -183,8 +184,7 @@ public class PrimaryController {
                             rs.getInt("credits"),
                             rs.getString("department"),
                             rs.getString("major"),
-                            rs.getString("semester")
-                    );
+                            rs.getString("semester"));
 
                     // store enrollment_id into the row so Drop can use it
                     cv.setEnrollmentId(rs.getInt("enrollment_id"));
@@ -201,12 +201,12 @@ public class PrimaryController {
 
         enrolledTable.setItems(data);
         updateDropButtonState();
-        System.out.println("DEBUG: loaded " + data.size() + " enrolled classes");
     }
 
-    /** Enable Drop button only if at least one class is selected. */
+    // Enable Drop button only if at least one class is selected.
     private void updateDropButtonState() {
-        if (dropClassesButton == null || enrolledTable == null) return;
+        if (dropClassesButton == null || enrolledTable == null)
+            return;
 
         boolean anySelected = false;
         for (CourseView cv : enrolledTable.getItems()) {
@@ -218,13 +218,13 @@ public class PrimaryController {
         dropClassesButton.setDisable(!anySelected);
     }
 
-    // ------------------ Drop Classes ------------------
-
+    // Drop Classes
     @FXML
     private void handleDropClasses() {
-        if (enrolledTable == null) return;
+        if (enrolledTable == null)
+            return;
 
-        ObservableList<CourseView> items    = enrolledTable.getItems();
+        ObservableList<CourseView> items = enrolledTable.getItems();
         ObservableList<CourseView> selected = FXCollections.observableArrayList();
         for (CourseView cv : items) {
             if (cv.isSelected()) {
@@ -251,14 +251,14 @@ public class PrimaryController {
             return;
         }
 
-        String deleteGradesSql = "DELETE FROM grades      WHERE enrollment_id = ?";
+        String deleteGradesSql = "DELETE FROM grades WHERE enrollment_id = ?";
         String deleteEnrollSql = "DELETE FROM enrollments WHERE enrollment_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection()) {
             conn.setAutoCommit(false);
 
             try (PreparedStatement deleteGrades = conn.prepareStatement(deleteGradesSql);
-                 PreparedStatement deleteEnroll = conn.prepareStatement(deleteEnrollSql)) {
+                    PreparedStatement deleteEnroll = conn.prepareStatement(deleteEnrollSql)) {
 
                 for (CourseView cv : selected) {
                     int enrollmentId = cv.getEnrollmentId();
@@ -298,8 +298,6 @@ public class PrimaryController {
         // reload after successful drop
         loadEnrolledClasses(studentId);
     }
-
-    // ------------------ Navigation ------------------
 
     @FXML
     private void goToClasses() throws IOException {

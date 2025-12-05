@@ -17,13 +17,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.example.dao.CourseDao;
-import java.sql.*;
-import com.example.CourseView;
 import com.example.dao.DatabaseConnection;
 
-
 public class ClassesController {
-   
+
     @FXML
     private TableColumn<CourseView, Boolean> selectColumn;
 
@@ -85,7 +82,7 @@ public class ClassesController {
                     setDisable(false);
                 } else if (item.isAlreadyEnrolled()) {
                     setStyle("-fx-background-color: #e0e0e0; -fx-opacity: 0.7;");
-                    setDisable(true);   // disables checkbox & row selection
+                    setDisable(true); // disables checkbox & row selection
                 } else {
                     setStyle("");
                     setDisable(false);
@@ -98,8 +95,6 @@ public class ClassesController {
         loadCourses(null, null);
     }
 
-
-
     @FXML
     private void handleEnroll() {
         String studentId = App.getCurrentStudentId();
@@ -108,14 +103,14 @@ public class ClassesController {
             return;
         }
 
-        // 2. Get selected semester (required to enroll)
+        // Get selected semester (required to enroll)
         String semester = semesterComboBox.getSelectionModel().getSelectedItem();
         if (semester == null || semester.isEmpty()) {
             showError("Enrollment error", "Please select a semester before enrolling.");
             return;
         }
 
-        // 3. Collect selected courses
+        // Collect selected courses
         List<CourseView> selected = new ArrayList<>();
         for (CourseView cv : classesTable.getItems()) {
             if (cv.isSelected()) {
@@ -128,20 +123,19 @@ public class ClassesController {
             return;
         }
 
-        // 4. Calculate total credits of selected courses
+        // Calculate total credits of selected courses
         int newCredits = 0;
         for (CourseView cv : selected) {
             newCredits += cv.getCredits();
         }
 
-        // 5. Check existing credits and insert if <= 18 total
+        // Check existing credits and insert if <= 18 total
         try (Connection conn = com.example.dao.DatabaseConnection.getConnection()) {
             conn.setAutoCommit(false);
 
             // Get existing credits for this student + semester
             int existingCredits = 0;
-            String creditSql =
-                    "SELECT COALESCE(SUM(c.credits), 0) AS total " +
+            String creditSql = "SELECT COALESCE(SUM(c.credits), 0) AS total " +
                     "FROM enrollments e " +
                     "JOIN courses c ON e.course_code = c.course_code " +
                     "WHERE e.student_id = ? AND e.semester = ?";
@@ -160,17 +154,15 @@ public class ClassesController {
             if (totalIfEnrolled > 18) {
                 conn.rollback();
                 showError(
-                    "Enrollment error",
-                    "You are currently enrolled in " + existingCredits + " units.\n" +
-                    "Adding " + newCredits + " units would make " + totalIfEnrolled +
-                    " units, which exceeds the 18-unit limit."
-                );
+                        "Enrollment error",
+                        "You are currently enrolled in " + existingCredits + " units.\n" +
+                                "Adding " + newCredits + " units would make " + totalIfEnrolled +
+                                " units, which exceeds the 18-unit limit.");
                 return;
             }
 
-            // 6. Insert enrollments, avoiding duplicates
-            String insertSql =
-                    "INSERT INTO enrollments (student_id, course_code, semester, enrollment_date) " +
+            // Insert enrollments, avoiding duplicates
+            String insertSql = "INSERT INTO enrollments (student_id, course_code, semester, enrollment_date) " +
                     "SELECT ?, ?, ?, CURDATE() " +
                     "FROM DUAL WHERE NOT EXISTS (" +
                     "  SELECT 1 FROM enrollments " +
@@ -192,23 +184,21 @@ public class ClassesController {
 
             conn.commit();
 
-            // 7. clear selections and reload table
+            // clear selections and reload table
             for (CourseView cv : selected) {
                 cv.setSelected(false);
             }
 
-
             showInfo("Enrollment successful",
                     "You have been enrolled in " + selected.size() +
-                    " course(s) for " + semester +
-                    ". Total units this term: " + totalIfEnrolled + ".");
+                            " course(s) for " + semester +
+                            ". Total units this term: " + totalIfEnrolled + ".");
 
         } catch (SQLException e) {
             e.printStackTrace();
             showError("Enrollment error", e.getMessage());
         }
     }
-
 
     private void loadFilters() {
         try {
@@ -230,18 +220,20 @@ public class ClassesController {
 
     private void loadCourses(String majorFilter, String semesterFilter) {
         try {
-            if ("All".equals(majorFilter)) majorFilter = null;
-            if ("All".equals(semesterFilter)) semesterFilter = null;
+            if ("All".equals(majorFilter))
+                majorFilter = null;
+            if ("All".equals(semesterFilter))
+                semesterFilter = null;
 
             var list = courseDao.getCourses(majorFilter, semesterFilter);
 
-            // NEW: find which (course_code, semester) pairs this student is already enrolled in
+            // find which (course_code, semester) pairs this student is already enrolled in
             String studentId = App.getCurrentStudentId();
             Set<String> enrolledKeys = new HashSet<>();
             if (studentId != null && !studentId.isBlank()) {
                 String sql = "SELECT course_code, semester FROM enrollments WHERE student_id = ?";
                 try (Connection conn = DatabaseConnection.getConnection();
-                    PreparedStatement stmt = conn.prepareStatement(sql)) {
+                        PreparedStatement stmt = conn.prepareStatement(sql)) {
 
                     stmt.setString(1, studentId);
                     try (ResultSet rs = stmt.executeQuery()) {
@@ -270,7 +262,6 @@ public class ClassesController {
         }
     }
 
-
     @FXML
     private void handleFilter() {
         String major = majorComboBox.getSelectionModel().getSelectedItem();
@@ -287,10 +278,8 @@ public class ClassesController {
 
     @FXML
     private void handleBack() throws IOException {
-        System.out.println("DEBUG handleBack -> go to primary");
         App.setRoot("primary");
     }
-
 
     private void showError(String title, String msg) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -301,11 +290,10 @@ public class ClassesController {
     }
 
     private void showInfo(String title, String message) {
-    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-    alert.setTitle(title);
-    alert.setHeaderText(null);
-    alert.setContentText(message);
-    alert.showAndWait();
-}
-
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 }

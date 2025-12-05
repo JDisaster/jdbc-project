@@ -20,7 +20,6 @@ public class LoginController {
     @FXML
     private void handleLogin() throws IOException {
         String studentID = studentIDField.getText();
-        String password = passwordField.getText();
 
         if (studentID == null || studentID.isBlank()) {
             messageLabel.setText("Student ID cannot be empty.");
@@ -29,11 +28,8 @@ public class LoginController {
 
         // store logged-in ID
         App.setCurrentStudentId(studentID);
-        System.out.println("DEBUG handleLogin -> studentID=" + studentID);
-
         App.setRoot("primary");
     }
-
 
     @FXML
     private void goToSignup() throws IOException {
