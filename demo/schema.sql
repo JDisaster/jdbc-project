@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS departments(
 CREATE TABLE IF NOT EXISTS courses(
     courseID INT AUTO_INCREMENT PRIMARY KEY,
     courseName VARCHAR(100) NOT NULL,
+    credits INT NOT NULL,
     departmentID INT NOT NULL,
     courseCode VARCHAR(10) UNIQUE NOT NULL,
 

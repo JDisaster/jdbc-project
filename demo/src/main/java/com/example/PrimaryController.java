@@ -126,7 +126,7 @@ public class PrimaryController {
             "WHERE e.student_id = ? " +
             "ORDER BY e.semester, c.course_code";
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = Database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, studentId);
