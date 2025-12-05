@@ -1,0 +1,73 @@
+package com.example;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class DatabaseConnection {
+    private static Connection connection = null;
+    
+    // Private constructor to prevent instantiation
+    private DatabaseConnection() {}
+    
+    /**
+     * Get a database connection using Singleton pattern
+     * @return Connection object
+     * @throws SQLException if connection fails
+     */
+    public static Connection getConnection() throws SQLException {
+        if (connection == null || connection.isClosed()) {
+            try {
+                // Get configuration values
+                String url = DatabaseConfig.getUrl();
+                String username = DatabaseConfig.getUsername();
+                String password = DatabaseConfig.getPassword();
+                
+                // Establish connection
+                connection = DriverManager.getConnection(url, username, password);
+                System.out.println("Database connection established successfully!");
+                
+                // Test connection
+                if (connection.isValid(5)) {
+                    System.out.println("Connection is valid.");
+                }
+                
+            } catch (SQLException e) {
+                System.err.println("Failed to create database connection: " + e.getMessage());
+                throw e;
+            }
+        }
+        return connection;
+    }
+    
+    /**
+     * Close the database connection
+     */
+    public static void closeConnection() {
+        if (connection != null) {
+            try {
+                connection.close();
+                System.out.println("Database connection closed.");
+            } catch (SQLException e) {
+                System.err.println("Error closing connection: " + e.getMessage());
+            }
+        }
+    }
+    
+    /**
+     * Test the database connection
+     */
+    public static void testConnection() {
+        try (Connection conn = getConnection()) {
+            if (conn != null && !conn.isClosed()) {
+                System.out.println("✓ Database connection test PASSED");
+                System.out.println("  Database: " + conn.getMetaData().getDatabaseProductName());
+                System.out.println("  Version: " + conn.getMetaData().getDatabaseProductVersion());
+                System.out.println("  Driver: " + conn.getMetaData().getDriverName());
+                System.out.println("  URL: " + conn.getMetaData().getURL());
+            }
+        } catch (SQLException e) {
+            System.err.println("✗ Database connection test FAILED: " + e.getMessage());
+        }
+    }
+}
