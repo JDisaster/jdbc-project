@@ -1,0 +1,78 @@
+package com.example;
+
+import com.example.dao.UserDAO;
+import com.example.model.User;
+import java.time.LocalDate;
+import java.util.List;
+
+public class App {
+    public static void main(String[] args) {
+        System.out.println("=== Student Management System with JDBC ===");
+        
+        // 1. Test database connection
+        System.out.println("\n1. Testing database connection...");
+        DatabaseConnection.testConnection();
+        
+        // 2. Initialize DAO
+        UserDAO userDAO = new UserDAO();
+        
+        // 3. CREATE - Add a new user
+        System.out.println("\n2. Creating a new user...");
+        User newUser = new User(
+            "S2024001", 
+            "Test Student", 
+            "test@university.edu", 
+            "password123", 
+            "Computer Science", 
+            "Fall 2025", 
+            LocalDate.now()
+        );
+        
+        boolean created = userDAO.createUser(newUser);
+        System.out.println("User created: " + created);
+        
+        // 4. READ - Get user by ID
+        System.out.println("\n3. Retrieving user by ID...");
+        User retrievedUser = userDAO.getUserById("S2024001");
+        if (retrievedUser != null) {
+            System.out.println("Found user: " + retrievedUser.getName());
+        }
+        
+        // 5. READ - Get all users
+        System.out.println("\n4. Retrieving all users...");
+        List<User> allUsers = userDAO.getAllUsers();
+        System.out.println("Total users: " + allUsers.size());
+        System.out.println("First 5 users:");
+        allUsers.stream().limit(5).forEach(user -> 
+            System.out.println("  - " + user.getStudentId() + ": " + user.getName()));
+        
+        // 6. UPDATE - Modify user
+        System.out.println("\n5. Updating user...");
+        if (retrievedUser != null) {
+            retrievedUser.setName("Updated Name");
+            retrievedUser.setEmail("updated@university.edu");
+            boolean updated = userDAO.updateUser(retrievedUser);
+            System.out.println("User updated: " + updated);
+        }
+        
+        // 7. DELETE - Remove user
+        System.out.println("\n6. Deleting user...");
+        boolean deleted = userDAO.deleteUser("S2024001");
+        System.out.println("User deleted: " + deleted);
+        
+        // 8. Count users
+        System.out.println("\n7. Counting users...");
+        int count = userDAO.countUsers();
+        System.out.println("Total users in database: " + count);
+        
+        // 9. Search users
+        System.out.println("\n8. Searching users by name...");
+        List<User> searchResults = userDAO.searchUsersByName("John", 10, 0);
+        System.out.println("Search results: " + searchResults.size() + " users found");
+        
+        System.out.println("\n=== Program completed successfully ===");
+        
+        // Close connection
+        DatabaseConnection.closeConnection();
+    }
+}
