@@ -287,9 +287,10 @@ public class ClassesController {
 
     @FXML
     private void handleBack() throws IOException {
-        // Go back to your main/primary page
-        App.setRoot("login");
+        System.out.println("DEBUG handleBack -> go to primary");
+        App.setRoot("primary");
     }
+
 
     private void showError(String title, String msg) {
         Alert alert = new Alert(Alert.AlertType.ERROR);

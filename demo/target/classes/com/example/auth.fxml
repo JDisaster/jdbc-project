@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Pos?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.AuthController"
+            style="-fx-background-color: white;">
+
+    <center>
+        <!-- Center the entire row vertically -->
+        <HBox spacing="60" alignment="CENTER">
+            <padding>
+                <Insets top="40" bottom="40" left="40" right="40"/>
+            </padding>
+
+            <!-- LOGIN SECTION (left) -->
+            <VBox spacing="12" alignment="CENTER_LEFT">
+                <Label text="Login" style="-fx-font-size: 22; -fx-font-weight: bold;"/>
+
+                <VBox spacing="6">
+                    <Label text="Student ID:"/>
+                    <TextField fx:id="loginStudentID"/>
+                </VBox>
+
+                <VBox spacing="6">
+                    <Label text="Password:"/>
+                    <PasswordField fx:id="loginPassword"/>
+                </VBox>
+
+                <Button text="Login"
+                        onAction="#handleLogin"
+                        style="-fx-padding: 6 25;"/>
+
+                <Label fx:id="loginMessage" style="-fx-text-fill: red;"/>
+            </VBox>
+
+
+            <!-- VERTICAL DIVIDER WITH “OR” -->
+            <VBox alignment="CENTER" spacing="5">
+                <Separator orientation="VERTICAL" prefHeight="200"/>
+                <Label text="or" style="-fx-font-size: 14; -fx-font-weight: bold;"/>
+                <Separator orientation="VERTICAL" prefHeight="200"/>
+            </VBox>
+
+
+            <!-- SIGN-UP SECTION (right) -->
+            <VBox spacing="12" alignment="CENTER_LEFT">
+                <Label text="Create Account" style="-fx-font-size: 22; -fx-font-weight: bold;"/>
+
+                <VBox spacing="6">
+                    <Label text="Student Name:"/>
+                    <TextField fx:id="signupName"/>
+                </VBox>
+
+                <VBox spacing="6">
+                    <Label text="Student ID:"/>
+                    <TextField fx:id="signupStudentID"/>
+                </VBox>
+
+                <VBox spacing="6">
+                    <Label text="Password:"/>
+                    <PasswordField fx:id="signupPassword"/>
+                </VBox>
+
+                <VBox spacing="6">
+                    <Label text="Major:"/>
+                    <ComboBox fx:id="signupMajor" prefWidth="200"/>
+                </VBox>
+
+                <VBox spacing="6">
+                    <Label text="Semester:"/>
+                    <ComboBox fx:id="signupSemester" prefWidth="200"/>
+                </VBox>
+
+                <Button text="Create Account"
+                        onAction="#handleSignup"
+                        style="-fx-padding: 6 25;"/>
+
+                <Label fx:id="signupMessage" style="-fx-text-fill: green;"/>
+            </VBox>
+
+        </HBox>
+    </center>
+
+</BorderPane>
