@@ -25,9 +25,9 @@
                GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
     <!-- Username -->
-    <Label text="Username:"
+    <Label text="Email:"
            GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-    <TextField fx:id="newUsername"
+    <TextField fx:id="newEmail"
                GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 
     <!-- Password -->

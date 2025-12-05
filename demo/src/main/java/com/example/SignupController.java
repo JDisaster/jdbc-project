@@ -16,7 +16,7 @@ public class SignupController {
     private TextField studentNameField;
 
     @FXML
-    private TextField newStudentID;
+    private TextField newEmail;
 
     @FXML
     private PasswordField newPassword;
@@ -139,7 +139,7 @@ public class SignupController {
     @FXML
     private void handleCreateAccount() {
         String studentName = studentNameField.getText();
-        String studentID = newStudentID.getText();
+        String email = newEmail.getText();
         String password = newPassword.getText();
         String major = majorComboBox.getValue();
         SemesterItem semesterItem = semesterComboBox.getValue();
@@ -152,8 +152,8 @@ public class SignupController {
             return;
         }
 
-        if (studentID == null || studentID.isBlank()) {
-            statusMessage.setText("Student ID cannot be empty.");
+        if (email == null || email.isBlank()) {
+            statusMessage.setText("Email cannot be empty.");
             return;
         }
 
@@ -172,12 +172,6 @@ public class SignupController {
             return;
         }
 
-        // 2) Student ID must contain only numbers
-        if (!studentID.matches("\\d+")) {
-            statusMessage.setText("Student ID must contain numbers only.");
-            return;
-        }
-
         // 3) Password must be at least 8 characters long
         if (password.length() < 8) {
             statusMessage.setText("Password must be at least 8 characters long.");
@@ -191,10 +185,11 @@ public class SignupController {
         }
 
         // ---- All good ----
+        Database.createUser(studentName, email, password, major);
         String semester = semesterItem.getLabel();
         statusMessage.setText(
                 "Account created for " + studentName +
-                " (" + studentID + "), Major: " + major +
+                " (" + email + "), Major: " + major +
                 ", Semester: " + semester
         );
     }

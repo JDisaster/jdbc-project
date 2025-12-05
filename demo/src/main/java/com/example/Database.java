@@ -57,6 +57,8 @@ public class Database {
 
             SQL.setString(4, major);
             SQL.executeUpdate();
+            SQL.close();
+            conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -93,7 +95,11 @@ public class Database {
                 "SELECT studentID FROM students WHERE email = ?"
             );
             SQL.setString(1, email);
-            return Integer.toString(SQL.executeQuery().getInt("studentID"));
+            ResultSet rs = SQL.executeQuery();
+            if(rs.next()) {
+                return Integer.toString(rs.getInt("studentID"));
+            }
+            return null;
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
