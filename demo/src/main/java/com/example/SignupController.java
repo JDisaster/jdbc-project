@@ -10,6 +10,14 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import com.example.dao.DatabaseConnection;
+import java.sql.SQLIntegrityConstraintViolationException;
+
+
 public class SignupController {
 
     @FXML
@@ -60,7 +68,7 @@ public class SignupController {
             currentTermIndex = 3; // Winter
         }
 
-        // Clamp year to 2025–2026 range as requested
+        // Clamp year to 2025–2026 range
         if (currentYear < 2025) {
             currentYear = 2025;
         } else if (currentYear > 2026) {
@@ -139,65 +147,84 @@ public class SignupController {
     @FXML
     private void handleCreateAccount() {
         String studentName = studentNameField.getText();
-        String studentID = newStudentID.getText();
-        String password = newPassword.getText();
-        String major = majorComboBox.getValue();
+        String studentID   = newStudentID.getText();
+        String password    = newPassword.getText();
+        String major       = majorComboBox.getValue();
         SemesterItem semesterItem = semesterComboBox.getValue();
 
-        // ---- Validation with clear error messages ----
+        // ---- Validation with error messages ----
 
-        // 1) All fields required
         if (studentName == null || studentName.isBlank()) {
             statusMessage.setText("Student name cannot be empty.");
             return;
         }
-
         if (studentID == null || studentID.isBlank()) {
             statusMessage.setText("Student ID cannot be empty.");
             return;
         }
-
         if (password == null || password.isBlank()) {
             statusMessage.setText("Password cannot be empty.");
             return;
         }
-
         if (major == null || major.isBlank()) {
             statusMessage.setText("Please select a major.");
             return;
         }
-
         if (semesterItem == null) {
             statusMessage.setText("Please select a semester.");
             return;
         }
-
-        // 2) Student ID must contain only numbers
         if (!studentID.matches("\\d+")) {
             statusMessage.setText("Student ID must contain numbers only.");
             return;
         }
-
-        // 3) Password must be at least 8 characters long
         if (password.length() < 8) {
             statusMessage.setText("Password must be at least 8 characters long.");
             return;
         }
-
-        // 4) Semester cannot be in the past (extra safety)
         if (semesterItem.isPast()) {
             statusMessage.setText("Please select a current or future semester.");
             return;
         }
 
-        // ---- All good ----
         String semester = semesterItem.getLabel();
-        statusMessage.setText(
+
+        // ---- Insert into DB ----
+        String sql = "INSERT INTO users (student_id, name, password, major, semester) " +
+                    "VALUES (?, ?, ?, ?, ?)";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, studentID);
+            stmt.setString(2, studentName);
+            stmt.setString(3, password);
+            stmt.setString(4, major);
+            stmt.setString(5, semester);
+
+            stmt.executeUpdate();
+
+            statusMessage.setText(
                 "Account created for " + studentName +
                 " (" + studentID + "), Major: " + major +
                 ", Semester: " + semester
-        );
+            );
+
+            App.setCurrentStudentId(studentID);
+            App.setRoot("primary");
+
+        } catch (SQLIntegrityConstraintViolationException dup) {
+            // student_id already exists
+            statusMessage.setText("Student ID " + studentID + " is already taken.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            statusMessage.setText("Database error creating account: " + e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+            statusMessage.setText("Error opening main screen: " + e.getMessage());
+        }
     }
+
 
     @FXML
     private void goBackToLogin() throws IOException {

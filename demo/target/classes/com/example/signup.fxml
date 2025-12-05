@@ -24,11 +24,12 @@
     <TextField fx:id="studentNameField"
                GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
-    <!-- Username -->
-    <Label text="Username:"
-           GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-    <TextField fx:id="newUsername"
-               GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+    <!-- Student ID -->
+       <Label text="Student ID:"
+              GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+       <TextField fx:id="newStudentID"
+              GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
 
     <!-- Password -->
     <Label text="Password:"
