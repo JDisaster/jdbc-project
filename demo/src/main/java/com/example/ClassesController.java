@@ -56,7 +56,11 @@ public class ClassesController {
 
     @FXML
     private void initialize() {
-        // existing cell value factories:
+        // table & column must be editable
+        classesTable.setEditable(true);
+        selectColumn.setEditable(true);
+
+        // normal columns
         codeColumn.setCellValueFactory(data -> data.getValue().courseCodeProperty());
         nameColumn.setCellValueFactory(data -> data.getValue().courseNameProperty());
         creditsColumn.setCellValueFactory(data -> data.getValue().creditsProperty().asObject());
@@ -64,24 +68,23 @@ public class ClassesController {
         majorColumn.setCellValueFactory(data -> data.getValue().majorProperty());
         semesterColumn.setCellValueFactory(data -> data.getValue().semesterProperty());
 
-        selectColumn.setCellValueFactory(cellData -> cellData.getValue().selectedProperty());
-        selectColumn.setCellFactory(col -> new javafx.scene.control.cell.CheckBoxTableCell<>());
+        // checkbox column: use the helper, it wires editing correctly
+        selectColumn.setCellValueFactory(cd -> cd.getValue().selectedProperty());
+        selectColumn.setCellFactory(CheckBoxTableCell.forTableColumn(selectColumn));
 
-
-        // load filters and data
+        // filters + data
         loadFilters();
         loadCourses(null, null);
     }
+
+
     @FXML
     private void handleEnroll() {
-        // 1. Get current student (replace fallback with your login logic)
-        String studentId = "1001"; // temp
+        String studentId = App.getCurrentStudentId();
         if (studentId == null || studentId.isEmpty()) {
             showError("Enrollment error", "No student is logged in. Please log in again.");
             return;
         }
-
-
 
         // 2. Get selected semester (required to enroll)
         String semester = semesterComboBox.getSelectionModel().getSelectedItem();

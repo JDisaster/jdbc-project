@@ -22,10 +22,18 @@ public class LoginController {
         String studentID = studentIDField.getText();
         String password = passwordField.getText();
 
-        // temp bypass login for testing
-        App.setCurrentStudentId(studentID); 
+        if (studentID == null || studentID.isBlank()) {
+            messageLabel.setText("Student ID cannot be empty.");
+            return;
+        }
+
+        // store logged-in ID
+        App.setCurrentStudentId(studentID);
+        System.out.println("DEBUG handleLogin -> studentID=" + studentID);
+
         App.setRoot("primary");
     }
+
 
     @FXML
     private void goToSignup() throws IOException {
