@@ -31,7 +31,12 @@ public class App extends Application {
         stage.show();
     }
 
-    public static void setRoot(String fxml) throws IOException {
+    @Override
+    public void init() throws Exception {
+        Database.init();
+    }
+
+    static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
     }
 
